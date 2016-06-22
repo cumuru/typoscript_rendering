@@ -1,29 +1,45 @@
 language: php
 
-php:
-  - 5.3
-  - 5.4
-  - 5.5
-  - 5.6
-
 matrix:
-  exclude:
+  include:
     - php: 5.3
-      env: TYPO3_BRANCH=master
+      env: TYPO3_BRANCH=TYPO3_6-2
     - php: 5.4
+      env: TYPO3_BRANCH=TYPO3_6-2
+    - php: 5.5
+      env: TYPO3_BRANCH=TYPO3_6-2
+    - php: 5.6
+      env: TYPO3_BRANCH=TYPO3_6-2
+    - php: 5.5
+      env: TYPO3_BRANCH=TYPO3_7-6
+    - php: 5.6
+      env: TYPO3_BRANCH=TYPO3_7-6
+    - php: 7.0
+      env: TYPO3_BRANCH=TYPO3_7-6
+    - php: 7.0
       env: TYPO3_BRANCH=master
-
-env:
-  - TYPO3_BRANCH=master
-  - TYPO3_BRANCH=TYPO3_6-2
 
 notifications:
   email:
     - helmut@typo3.org
 
-before_script:
-  - sudo apt-get install parallel
+sudo: false
+cache:
+  directories:
+    - $HOME/.composer/cache
+
+addons:
+  apt:
+    packages:
+      - parallel
+
+before_install:
+  - phpenv config-rm xdebug.ini
   - composer self-update
+  - composer --version
+  - if [ "$GITHUB_COMPOSER_AUTH" ]; then composer config -g github-oauth.github.com $GITHUB_COMPOSER_AUTH; fi
+
+before_script:
   - cd ..
   - git clone --single-branch --branch $TYPO3_BRANCH --depth 1 https://github.com/TYPO3/TYPO3.CMS.git typo3_core
   - mv typo3_core/* .
